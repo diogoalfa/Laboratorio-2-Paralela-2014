@@ -58,7 +58,7 @@ def divisionTareaImagen(ruta):
 def main():
     if rank==0:
         ruta="imagenMuestra.jpg"
-        divisionTareaImagen(ruta)
+        divisionTareaImagen(ruta) 
     if rank!=0:
         arrTrabajo=comm.recv(source=0)    #cada procesador recibe un arreglo RGB que contiene un trozo horizontal de la imagen
         arrImgSalida=aplicarBrillo(arrTrabajo,0.5)    #enviar el arreglo RGB a transformarlo en arreglo negativo de la imagen
