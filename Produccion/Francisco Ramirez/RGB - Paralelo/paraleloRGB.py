@@ -30,17 +30,16 @@ size = comm.size     # cantidad de procesadores a usar
 # En esta funcion se mandara a cada procesador la cantidad de datos con la que trabajaran
 # Si sobran datos para que sean parejos, se le asignara al ultimo procesador
 def distribuirEnP(size,altura):
-    if (rank == 0):
-        cuoc = (altura) / (size-2) #c : cuociente
-        rest = (altura) % (size-2) #r : resto
-        conta = 0
-        for p in range(size-2):
-            if (p+1) != (size-2):
-                conta = conta + cuoc
-                comm.send(conta, dest = p+2)
-            else:
-                conta = conta+cuoc+rest
-                comm.send(conta, dest = p+2)
+    cuoc = (altura) / (size-2) #c : cuociente
+    rest = (altura) % (size-2) #r : resto
+    conta = 0
+    for p in range(size-2):
+        if (p+1) != (size-2):
+            conta = conta + cuoc
+            comm.send(conta, dest = p+2)
+        else:
+            conta = conta+cuoc+rest
+            comm.send(conta, dest = p+2)
 
 # El procesador 0 recibirá las cantidad de datos con la que trabajará
 # cada procesador para devolver los indice i y j hasta donde operará
@@ -68,13 +67,11 @@ def buscarRangoFinal(base,altura):
 def convertirImgMatrixRGB(img):
     return np.array(img.convert("RGB"))
 
-def cortarImagen(x, y,base, r, g, b):
-    #print "hol"
-    im = Image.open('1.jpg')
-    region = im.crop((0, x, base, y))
-    region.save("cut"+str(rank)+".jpg")
-    #data= np.array(region.convert("RGB"))
-    mezclarRGB(region,r,g,b)
+def cortarImagen(data0, x, y, base, r, g, b):
+    # im = Image.open('1.jpg')
+    region = data0.crop((0, x, base, y))
+    # region.save("cut"+str(rank)+".jpg")
+    mezclarRGB(region, r, g, b)
 
 def mezclarRGB(img,r,g,b):
     arrImg=convertirImgMatrixRGB(img)
@@ -100,20 +97,28 @@ def unirImagen():
 #-------------MAIN---------------------
 
 # Se sobre entiende que los delimitadores son espacios
-data = Image.open("1.jpg")
-data=convertirImgMatrixRGB(data)
-altura = data.shape[0]
-base = data.shape[1]
+if rank != 0 and rank != 1:
+    data0 = Image.open("1.jpg")
+    data1 = convertirImgMatrixRGB(data0)
+    altura = data1.shape[0]
+    base = data1.shape[1]
 # El procesador 0 estará a cargo de mandar la cantidad de datos
 # para cada procesador
-if rank == 0:
+if rank == 2:
     print ""
-    print "altura,base: ",altura,base
-    distribuirEnP(size,altura)
+    comm.send(altura, dest=0)
+    comm.send(base, dest=1)
+    distribuirEnP(size, altura)
+
+if rank == 0:
+    print "Altura: ", comm.recv(source=2)
+
+if rank == 1:
+    print "Base: ", comm.recv(source=2)
 
 if rank >= 2:
     # Recibe la cantidad de datos en cada procesador
-    fin = comm.recv(source=0)
+    fin = comm.recv(source=2)
     #fin = fin - 1
     #envia los datos con que finalizan al siguiente procesador para que lo usen como inicio
     if size != 3:
@@ -141,7 +146,7 @@ if rank >= 2:
     g=0
     b=0
 
-    cortarImagen(ini,fin,base,r,g,b)
+    cortarImagen(data0, ini, fin, base, r, g, b)
 
 if rank==2:
     #intentaremos unir las imagenes, se usa una secuencia try catch porque puede suceder que intentemos
