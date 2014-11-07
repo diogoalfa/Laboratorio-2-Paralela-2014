@@ -78,7 +78,7 @@ def main():
 
     elapsed_time=time.time()-starting_point
     print ""
-    print "Serial Time [seconds]: " + str(elapsed_time)
+    print "Tiempo paralelo [s]: " + str(elapsed_time)
 
 
 main()
