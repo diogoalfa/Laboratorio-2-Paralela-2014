@@ -5,6 +5,7 @@ import ImageFilter
 from numpy import array, shape, reshape, zeros, transpose
 from PIL import Image, ImageChops, ImageOps
 import StringIO
+import time
 
 comm = MPI.COMM_WORLD  # comunicador entre dos procesadores #
 rank = comm.rank     # id procesador actual #
@@ -42,7 +43,7 @@ def divisionTareaImagen(ruta):
         comm.send(arrImg, dest = i)
 
 def main():
-
+    starting_point=time.time()
     if rank == 0:
         ruta="1.jpg"
         divisionTareaImagen(ruta)
@@ -60,5 +61,9 @@ def main():
                 construcImg = comm.recv(source = i)
         imgContrucFinal = Image.fromarray(construcImg)
         imgContrucFinal.save("imagentranspuesta90.png")
+        
+    elapsed_time=time.time()-starting_point
+    print ""
+    print "Tiempo paralelo [s]: " + str(elapsed_time)
 
 main()
