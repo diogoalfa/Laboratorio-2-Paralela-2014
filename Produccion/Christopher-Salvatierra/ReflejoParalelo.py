@@ -13,51 +13,43 @@ rank = comm.rank     # id procesador actual #
 size = comm.size     # tamano procesador #
 
 
+# largo=imgSize[1]
+# ancho=imgSize[0]
+# print "largo :",largo
+# print "Ancho :",ancho
+
+
+
 def convertirImgMatrixRGB(img):
     return np.array(img.convert("RGB"))
 
-def rotar90(img):
-    arrImg = convertirImgMatrixRGB(img)
-    n = img.size[0]
-    m = img.size[1]
-    final = np.array(Image.new("RGB",(m,n)))
-    for i in range(n): #fila
-        for j in range(m): #columna
-            final[i][j] = arrImg[::, ((i*-1)-1)][j]
-    imgColor = Image.fromarray(final)
-    return imgColor
-
-def rotar180(img):
-    return rotar90(rotar90(img)) #debido a que el algoritmo de cambio de posicion es el mism
-
+#aplicar reflejo
 def aplicarReflejo(arreglo):
     img = Image.fromarray(arreglo)
-    inv = img #se hace una copia de la imagen
-    inv = rotar180(inv) #se gira
-
-    copiaInvertida = convertirImgMatrixRGB(inv) #se convierten en matrices ambas imagenes
-
-    imgMatriz = convertirImgMatrixRGB(img)
-    filas = img.size[1]
-    columnas = img.size[0]
-
-    #Es una idea
-
-    #print "MATRIZ ORIGINAL"
-    #print imgMatriz
-    for i in range (0,filas):
-        for j in range(0,columnas):
-            aux = imgMatriz[i][j]
-            copiaInvertida[filas-1][j] = aux
-        filas=filas-1
-    #print "MATRIZ MODIFICADA"
-    #print copiaInvertida
-
-    #arreglo = np.vstack((imgMatriz,copiaInvertida))
-    arreglo = copiaInvertida
-
-    #imgInvertida = Image.fromarray(arreglo)
-    return arreglo
+    arrImg=convertirImgMatrixRGB(img)
+    arrSize=arrImg.shape
+    largo=arrSize[1]
+    ancho=arrSize[0]
+    arrFinal = np.array(Image.new("RGB",(largo,ancho)))
+    i=ancho-1
+    j=0
+    u=0
+    v=0
+    while i>=0:
+        while j<largo:
+            aux=arrImg[i][j]
+            arrFinal[u][v]=aux
+            j+=1
+            v+=1
+        i-=1
+        j=0
+        u+=1
+        v=0
+    #imgFinal =np.vstack((arrImg,arrFinal))
+    imgFinal= arrFinal
+    #imgReflejo = Image.fromarray(imgFinal)
+    #return imgReflejo
+    return imgFinal
 
 #funcion que recibe la ruta de imagen y distribuye los trozos horizontales a cada procesador excepto el cero
 def divisionTareaImagen(ruta):
@@ -80,7 +72,7 @@ def divisionTareaImagen(ruta):
 
 def main():
     if rank==0:
-        ruta="imagenMuestra.jpg"
+        ruta="1.jpg"
         divisionTareaImagen(ruta)
     if rank!=0:
         arrTrabajo=comm.recv(source=0)    #cada procesador recibe un arreglo RGB que contiene un trozo horizontal de la imagen
@@ -90,17 +82,14 @@ def main():
         for i in range(1,size):
             if i > 1:
                 construcImg = np.concatenate((comm.recv(source=i),construcImg))
-
-
             if i == 1:
                 construcImg = comm.recv(source=i)
-
-        img = Image.open("imagenMuestra.jpg")
+        img = Image.open("1.jpg")
         imgOriginal = convertirImgMatrixRGB(img)
         arreglo = np.vstack((imgOriginal,construcImg))
         imgContrucFinal=Image.fromarray(arreglo)
-        imgContrucFinal.save("resultado.jpg")
-
+        #imgContrucFinal=Image.fromarray(construcImg)
+        imgContrucFinal.save("IMAGENFINAL.png")
 
 
 import time #Libreria
