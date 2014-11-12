@@ -1,0 +1,1 @@
+El algoritmo de Panoramica a polar 360°, debido a que la imagen, la compacta y utiliza coordenadas polares para doblar la imagen, donde cada columna depende de la otra y no queda otro metodo que hacerlo serial
