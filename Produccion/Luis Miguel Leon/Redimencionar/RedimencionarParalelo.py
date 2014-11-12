@@ -84,7 +84,8 @@ def redimencionarImg(img,img2):
 def main():
     if rank==0:
         divisionTareaImagen("tatuajr.png")
-
+        starting_point=time.time()
+    
     if rank!=0:
         arrTrabajo = comm.recv(source = 0) #cada procesador recibe un arreglo RGB que contiene un trozo horizontal de la imagen
         img1=Image.fromarray(arrTrabajo)
@@ -96,8 +97,6 @@ def main():
 
         comm.send(arrImgSalida,dest=0)
 
-
-
     if rank == 0: #recibe los arreglos y los junta uno abajo del otro
         for i in range(1, size):
             if i > 1:
@@ -106,7 +105,10 @@ def main():
                 construcImg = comm.recv(source = i)
         imgContrucFinal = Image.fromarray(construcImg)
         imgContrucFinal.save("FINALFINAL.png")
+        elapsed_time=time.time()-starting_point
+        print "Tiempo Paralelo [segundos]: " + str(elapsed_time)
     print "fin" + str(rank)
+
 main()
 
 
