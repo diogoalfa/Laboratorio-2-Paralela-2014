@@ -36,7 +36,13 @@ def cicloOscurecer(imagen, rango):
         #----llama a la funcion---
         resultadoOscuro = oscurecer(imagen,porcentaje)
         #-----guarda la imagen obtenida----
-        resultadoOscuro.save('CopiasCache/resultadoCache'+str(i+1)+'.jpg')
+        if i<9:
+            resultadoOscuro.save('CopiasCache/resultadoCache00'+str(i+1)+'.jpg')
+        else:
+            if i<99:
+                resultadoOscuro.save('CopiasCache/resultadoCache0'+str(i+1)+'.jpg')
+            else:
+                resultadoOscuro.save('CopiasCache/resultadoCache'+str(i+1)+'.jpg')
 
 
 
@@ -49,7 +55,7 @@ def cicloOscurecer(imagen, rango):
 def main():
     #---carga imagen---
     imagen = Image.open('imagenCache.jpg')
-    imagen.save('CopiasCache/resultadoCache0.jpg')
+    imagen.save('CopiasCache/resultadoCache000.jpg')
 
     #----rango de 60 imagenes para el fade---
     rango = 30

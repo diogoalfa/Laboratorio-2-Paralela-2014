@@ -34,14 +34,10 @@ def oscurecer(imagen,porcentaje):
 #-----------se generaran multiples copias-----------------------------------------------
 #---------------------------------------------------------------------------------------
 def cicloOscurecer(rango):
-    for i in range(rango):
+    for i in range(1,rango):
         #---obtiene % de oscurecimiento---
         porcentaje = (float((i+1))/float(rango))
         comm.send(porcentaje, dest = i)
-        print i
-
-
-
 
 #el delay representa la pausa entre una imagen y otra y loop 0 especifica que el gif se repite en un bucle. *jpg tomara todos los archivos *jpg (para este caso, puede ser cualquier formato de imagen)
 
@@ -55,19 +51,27 @@ def main():
         imagen = Image.open('imagenCache.jpg')
         imagen.save('CopiasCache/resultadoCache0.jpg')
         cicloOscurecer(size)
-    if rank !=0: ############################## RECIBE TODO MENOS EL QUE VA A 0
+    if rank !=0:
         #---carga imagen---
         imagen = Image.open('imagenCache.jpg')
         porcentaje = comm.recv(source =0)
         imagen = oscurecer(imagen,porcentaje)
-        ## #######################################AQUI DEBERIAS ENVIAR LA FOTO
+        im = np.array(imagen.convert('RGB'))
+        comm.send(im, dest=0)
 
     if rank==0:
         #---llamada al generador de imagenes-----
-        for i in range (size):
+        for i in range (1,size):
             ######QUEDA SOLO 1 ELEMENTO POR RECIBIR QUE ES LA PROBABILIDAD
             imagen = comm.recv(source = i)
-            imagen.save('CopiasCache/resultadoCache'+str(i)+'.jpg')
+            imagen = Image.fromarray(imagen)
+            if i<10:
+                imagen.save('CopiasCache/resultadoCache00'+str(i)+'.jpg')
+            else:
+                if i<100:
+                    imagen.save('CopiasCache/resultadoCache0'+str(i)+'.jpg')
+                else:
+                    imagen.save('CopiasCache/resultadoCache'+str(i)+'.jpg')
 
         nombreSalida="Fade.gif"
         delay=10
