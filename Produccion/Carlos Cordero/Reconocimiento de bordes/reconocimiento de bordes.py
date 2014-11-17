@@ -41,7 +41,6 @@ def umbral(imagen_original):
     imagen_umbral.save("imagen_umbral.png", quality=100)
     return imagen_umbral
 
-
 def hacer_gris(imagen_original):
     """pone la foto en escala de grises
     toma el valor maximo del rgb de cada pixel
@@ -127,8 +126,8 @@ def normalizar(imagen_original):
             pixeles.append(pix)
     maximo = max(pixeles) 
     minimo = min(pixeles)
-    print maximo
-    print minimo
+    # print maximo
+    # print minimo
     l = 256.0/(maximo - minimo)
     pixeles = []
     for a in range(y):
@@ -148,6 +147,8 @@ def main():
     magen_original = imagen_original.convert('RGB')
 
     imagen_gris = hacer_gris(imagen_original)
+
+
     nueva = normalizar(imagen_gris)
     mascara1 = [[-1,0,1],[-2,0,2],[-1,0,1]]
     mascara2 = [[1,1,1],[0,0,0],[-1,-1,-1]]
@@ -166,5 +167,6 @@ def main():
     elapsed_time=time.time()-starting_point #calculo
     print ""
     print "Serial Time [seconds]: " + str(elapsed_time) #segundos
+    print ""
 if __name__ == "__main__":
     main()
