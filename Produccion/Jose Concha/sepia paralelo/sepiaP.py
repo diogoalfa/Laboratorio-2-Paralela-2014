@@ -1,13 +1,15 @@
 __author__ = 'jose'
-from PIL import Image,ImageOps
-import time
+
 from mpi4py import MPI
 import numpy as np
+from PIL import Image,ImageChops,ImageOps
+import StringIO
+import time
 inicio = time.time()
-comm = MPI.COMM_WORLD
-rank = comm.rank
-size = comm.size
-img = Image.open("12.jpg")
+comm = MPI.COMM_WORLD  # comunicador entre dos procesadores #
+
+rank = comm.rank     # id procesador actual #
+size = comm.size     # tamano procesador #
 
 def make_linear_ramp(white):
      ramp = []
@@ -24,29 +26,45 @@ def sepia(im):
     # apply sepia palette
     im.putpalette(sepia)
     return im
-#---------------------------------------------
-if rank ==0:
-    ancho,alto = img.size
-    for i in range(2,size):
-        if i <size-1:
-            imgFraccion = img.crop((0,(i-2)*alto/(size-2),ancho,((i-1)*alto/(size-2))-1))
-            comm.send(np.array(imgFraccion.convert("RGB")),dest=i)
-        else:
-            imgFraccion = img.crop((0,(i-2)*alto/(size-2),ancho,(alto-1)))
-            comm.send(np.array(imgFraccion.convert("RGB")),dest=i)
-if rank >=2:
-    imgWork = Image.fromarray(comm.recv(source=0))
-    imgWork = sepia(imgWork)
-    comm.send(np.array(imgWork.convert("RGB")),dest=0)
-if rank==0:
-    if size<3:
-        imagen = Image.fromarray(comm.recv(source=2))
-    else:
-        img1 = comm.recv(source=2)
-        for i in range(3,size):
-            img2 = comm.recv(source=i)
-            img1 = np.vstack((img1,img2))
-        imagen = Image.fromarray(img1)
-    imagen.save("sepiaParalelo.png")
-    final = time.time()-inicio
-    print "Parallel time [seconds] = " + str(final)
+
+def convertirImgMatrixRGB(img):
+    return np.array(img.convert("RGB"))
+
+#funcion que recibe la ruta de imagen y distribuye los trozos horizontales a cada procesador excepto el cero
+def divisionTareaImagen(ruta):
+    img=Image.open(ruta)
+    imgSize=img.size
+    largo=imgSize[1]
+    ancho=imgSize[0]
+    tamanoParte=largo/(size-1)  #(size-1) es para no incluir el procesador cero
+    xInicio=0
+    yInicio=0
+    tamPar=tamanoParte
+    for i in range(1,size):
+        parteImgEnvio=img.crop((xInicio,yInicio,ancho,tamPar))
+        tamPar=tamPar+tamanoParte
+        yInicio=yInicio+tamanoParte
+        rutaSalida="photoCut"+str(i)+".png"
+        parteImgEnvio.save(rutaSalida)
+        arrImg=convertirImgMatrixRGB(parteImgEnvio)
+        comm.send(arrImg,dest=i)
+
+def main():
+    if rank==0:
+        ruta="12.jpg"
+        divisionTareaImagen(ruta)
+    if rank!=0:
+        arrTrabajo=comm.recv(source=0)    #cada procesador recibe un arreglo RGB que contiene un trozo horizontal de la imagen
+        arrImgSalida=sepia(Image.fromarray(arrTrabajo))    #enviar el arreglo RGB a transformarlo en arreglo negativo de la imagen
+        comm.send(convertirImgMatrixRGB(arrImgSalida),dest=0)
+    if rank==0 :       #recibe los arreglos y los junta uno abajo del otro
+        for i in range(1,size):
+            if i > 1:
+                construcImg = np.concatenate((construcImg,comm.recv(source=i)))
+            if i == 1:
+                construcImg = comm.recv(source=i)
+        imgContrucFinal=Image.fromarray(construcImg)
+        imgContrucFinal.save("SepiaImage.png")
+        print "Parallel Time : "+str(time.time()-inicio)+" seconds"
+
+main()
