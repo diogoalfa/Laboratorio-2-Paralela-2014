@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" type="text/css" href="estilo.css">
+		<title>Validaciones efectos Juan Carlos Pérez</title>
+	</head>
+	<body>
+	  <form  class="contact_form" action="#" id="contact_form" runat="server">
+        <div>
+            <ul>
+                <li>
+                    <h2>Formulario efectos</h2>
+                    <span class="required_notification">* Datos requeridos</span>
+                </li>
+                <li>
+                    <h2>Efecto Brillo</h2>
+                </li>
+                <li>
+                  <!-- el numero va de -1 a 1 con paso 0.01-->
+                    <label for="brillo">Indice Efecto Brillo:</label>
+                    <input type="number" placeholder="valor entre -1 y 1" min="-1" max="1" step="0.01" required />
+                    <span class="form_hint">Ingrese un número entre -1 y 1</span>
+                </li>
+                <li>
+                    <h2>Redimensionar</h2>
+                </li>
+                <li>
+                    <!-- el numero va de 0 a 1000000 con paso de 1-->
+                    <label for="ancho"> Ingrese Ancho:</label>
+                    <input type="number" name="ancho" placeholder="valor entre 0 y 10.000.000" min="0" max="10000000" required />
+                    <span class="form_hint">Ingrese un número entre 0 y 10.000.000</span>
+                </li>
+                <li>
+                    <!-- el numero va de 0 a 1000000 con paso de 1-->
+                    <label for="largo"> Ingrese Largo:</label>
+                    <input type="number" name="largo" placeholder="valor entre 0 y 10.000.000" min="0" max="10000000" required />
+                    <span class="form_hint">Ingrese un número entre 0 y 10.000.000</span>
+                </li>
+                 <li>
+                    <h2>Fade</h2>
+                </li>
+                <li>
+                    <!-- el numero va de 5 a 300 con paso de 1-->
+                    <label for="fade"> Indice Fade:</label>
+                    <input type="number" name="fade" placeholder="valor entre 5 y 300" min="5" max="300" required />
+                    <span class="form_hint">Ingrese un número entre 5 y 300</span>
+                </li>
+                 <li>
+                    <h2>Suma de Fotos - Facto de suma</h2>
+                </li>
+                <li>
+                    <!-- el numero va de 0 a 1 con paso de 0.01-->
+                    <label for="sumaFotos"> Ingrese valor:</label>
+                    <input type="number" name="sumaFotos" placeholder="valor entre 0 y 1" min="0" max="1" step="0.01" required />
+                    <span class="form_hint">Ingrese un número entre 0 y 1</span>
+                </li>
+                <li>
+                    <button class="submit" type="submit">Enviar mensaje</button>
+                </li>
+            </ul>
+        </div>
+    </form>
+	</body>
+</html>
