@@ -32,6 +32,7 @@ def main():
         comm.send(ok,dest=0)
 
     if rank==0:
+        # AQUI SE PONE EL NOMBRE DE LA IMAGEN
         ruta="6MP"
         ext=".jpeg"
 
@@ -40,14 +41,14 @@ def main():
         openIniTime=time.time()
         img=Image.open(ruta+ext)
         openEndTime=time.time()-openIniTime
-        print "Image time: ",openEndTime
+        print "Tiempo de abrir la imagen: ",openEndTime
 
         print ""
         print "To RGB..."
         openIniTime=time.time()
         img=np.array(img.convert("RGB"))
         openEndTime=time.time()-openIniTime
-        print "RGB time: ",openEndTime
+        print "Tiempo de transformar: ",openEndTime
 
         print ""
         print "Comunication time..."
@@ -55,21 +56,21 @@ def main():
         comm.send(img,dest=1)
         ok=comm.recv(source=1)
         openEndTime=time.time()-openIniTime
-        print "Comunication time: ",openEndTime
+        print "Tiempo de comunicación: ",openEndTime
 
         print ""
         print "Build imagen..."
         openIniTime=time.time()
         imgContrucFinal=Image.fromarray(img)
         openEndTime=time.time()-openIniTime
-        print "Construction time: ",openEndTime
+        print "Tiempo preparacion: ",openEndTime
 
         print ""
         print "Save imagen..."
         openIniTime=time.time()
         imgContrucFinal.save(ruta+ext)
         openEndTime=time.time()-openIniTime
-        print "Save time: ",openEndTime
+        print "Tiempo de guardado: ",openEndTime
 
 
         elapsed_time=time.time()-starting_point
