@@ -8,10 +8,16 @@ import os
 import time
 from mpi4py import MPI
 
+def numero(num,cant):
+    while len(num)!=len(cant):
+        # print "entra"
+        num="0"+num
+    # print num
+    return num
+
 comm = MPI.COMM_WORLD  # comunicador entre dos procesadores
 rank = comm.rank     # id procesador actual
 size = comm.size     # cantidad de procesadores a usar
-
 
 starting_point=time.time()
 # open an image file (.bmp,.jpg,.png,.gif) you have in the working folder
@@ -23,54 +29,42 @@ imAgrandar = im1
 rgb = np.array(im1.convert("RGB"))
 alto = rgb.shape[0]
 ancho = rgb.shape[1]
+cantidad = str(size)
 
-im1.save("git/"+"999"+".jpeg")
-im1.save("git/"+"000"+".jpeg")
+if rank == 0:
+    resize = float(100/size)
+    #print resize
+    n = resize
 
+    for i in range(0, size):
+        # print i
+        # print "mandar a "+str(i)+" el n :"+str(n)
+        comm.send(n, dest=size-i-1)
+        n = n + resize
 
-i = 000
-while ancho > 1 and alto > 1:
-    if i <= 9:
-        imReducir.save("git/"+"000"+str(i)+".jpeg")
-    else:
-        if i <= 99:
-            imReducir.save("git/"+"00"+str(i)+".jpeg")
-        else:
-            if i <= 999:
-                imReducir.save("git/"+"0"+str(i)+".jpeg")
-            else:
-                imReducir.save("git/"+str(i)+".jpeg")
-    i = i + 001
-    alto = int(alto * 0.9)
-    ancho = int(ancho * 0.9)
+if rank != size-1:
+    factor = comm.recv(source = 0)
+    alto = int(alto * factor/100)
+    ancho = int(ancho * factor/100)
     imReducir = imReducir.resize((ancho, alto), Image.ANTIALIAS)
+    # imReducir.save("gif/"+str(rank)+".jpeg")
+    n=numero(str(rank),str(size*2))
 
-alto = rgb.shape[0]
-ancho = rgb.shape[1]
+    imReducir.save("gifp/"+n+".jpeg")
+    imReducir.save("gifp/"+str(9998-int(n))+".jpeg")
+    if rank != 0:
+        op = 0
+        comm.send(op, dest=0)
+if rank == 0:
+    n=numero(str(0), str(size*2))
+    for i in range (1, size-1):
+        op=comm.recv(source=i)
+    nombreSalida = "gifMasterP.gif"
+    delay = 5
+    fileAgrandar = "gifp/*jpeg"
+    system('convert -delay %d -loop 0 %s %s ' % (delay,fileAgrandar,nombreSalida))
 
-i = 998
-while ancho > 1 and alto > 1:
-    if i <= 9:
-        imAgrandar.save("git/"+"000"+str(i)+".jpeg")
-    else:
-        if i <= 99:
-            imAgrandar.save("git/"+"00"+str(i)+".jpeg")
-        else:
-            if i <= 999:
-                imAgrandar.save("git/"+"0"+str(i)+".jpeg")
-            else:
-                imAgrandar.save("git/"+str(i)+".jpeg")
-    i = i - 001
-    alto = int(alto * 0.9)
-    ancho = int(ancho * 0.9)
-    imAgrandar = imAgrandar.resize((ancho, alto), Image.ANTIALIAS)
-
-nombreSalida = "gifMaster.gif"
-delay = 5
-fileAgrandar = "git/*jpeg"
-system('convert -delay %d -loop 0 %s %s ' % (delay,fileAgrandar,nombreSalida))
-
-elapsed_time=time.time()-starting_point
-print ""
-print "Total Time [seconds]: " + str(elapsed_time)
+    elapsed_time=time.time()-starting_point
+    print ""
+    print "Total Time [seconds]: " + str(elapsed_time)
 
