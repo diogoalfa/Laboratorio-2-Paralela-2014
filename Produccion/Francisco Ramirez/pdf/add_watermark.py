@@ -3,8 +3,8 @@ from reportlab.pdfgen import canvas
 from StringIO import StringIO
 from PIL import Image
 
-WATERMARK_PATH = "inputs/3.png"
-PDF_PATH = "inputs/asd.pdf"
+WATERMARK_PATH = "inputs/agua3.png"
+PDF_PATH = "inputs/pdfdoc.tex.pdf"
 OUTPUT_FILE = "outputs/asd.pdf"
 
 # Use PyPDF to merge the image-PDF into the template
