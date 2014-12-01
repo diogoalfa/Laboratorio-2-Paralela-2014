@@ -33,7 +33,10 @@ def rotar270(img):
 
 if __name__ == '__main__':
     starting_point=time.time()
-    ruta1=str(sys.argv[1])
+    try:
+        ruta1=str(sys.argv[1])
+    except:
+        print sys.exit()
 
     im1=Image.open(ruta1)
     base=Image.open("negro.jpg")
@@ -60,42 +63,48 @@ if __name__ == '__main__':
 
         print(ancho,alto)
 
+    # COPIAR
 
-    os.mkdir("Gif")
+    try:
+        os.mkdir("Gif")
+    except:
+        shutil.rmtree("Gif")
+        os.mkdir("Gif")
+    # FIN COPIAR
 
     base.save("negro.jpg")
     nuevo=Image.fromarray(nuevo)
+
     nuevo.save("nuevo.jpg")
-    nuevo.save("Gif/01.jpg")
-    nuevo.save("Gif/02.jpg")
-    nuevo.save("Gif/03.jpg")
-
-    ## LISTO IMAGEN CUADRADA
-
+    nuevo.save("Gif/00.jpg")
 
     imgTrans = rotar90(nuevo)
-    imgTrans.save("Gif/05.jpg")
-    imgTrans.save("Gif/06.jpg")
-    imgTrans.save("Gif/07.jpg")
+    imgTrans.save("Gif/01.jpg")
+
     imgTrans = rotar180(nuevo)
-    imgTrans.save("Gif/09.jpg")
-    imgTrans.save("Gif/10.jpg")
-    imgTrans.save("Gif/11.jpg")
+    imgTrans.save("Gif/02.jpg")
+
     imgTrans = rotar270(nuevo)
-    imgTrans.save("Gif/13.jpg")
-    imgTrans.save("Gif/14.jpg")
-    imgTrans.save("Gif/15.jpg")
+    imgTrans.save("Gif/03.jpg")
 
     nombreSalida = "gifMaster.gif"
-    delay = 1
+    delay =40
     file = "Gif/*jpg"
-    system('convert -delay %d -loop 0 %s %s ' % (delay,file,nombreSalida))
+    system('convert -delay %d -loop 0 %s %s ' % (delay, file, nombreSalida))
 
-    os.remove("nuevo.jpg")
-    shutil.rmtree("Gif")
+    try:
+        os.remove("nuevo.jpg")
+        shutil.rmtree("Gif")
+        elapsed_time=time.time()-starting_point
+        print ""
+        print "Tiempo [seconds]: " + str(elapsed_time)
+    except:
+        elapsed_time=time.time()-starting_point
+        print ""
+        print "Tiempo [seconds]: " + str(elapsed_time)
 
-    elapsed_time=time.time()-starting_point
-    print ""
-    print "Tiempo [seconds]: " + str(elapsed_time)
+
+
+
 
 
