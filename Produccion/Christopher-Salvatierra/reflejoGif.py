@@ -135,7 +135,8 @@ def main():
 
     nombreSalida="imagenes/animacion.gif"
     delay=10
-    filepath="imagenes/*png"
+    #filepath="imagenes/*png"
+    filepath="imagenes/imagen%d.png[0-59]"
     toGif(filepath,delay,nombreSalida)
 
 starting_point=time.time() #Donde quiere empezar a calcular el tiempo
