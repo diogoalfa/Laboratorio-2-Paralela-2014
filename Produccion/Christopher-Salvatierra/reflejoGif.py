@@ -113,7 +113,7 @@ def main():
     separar = cantImagenes
     #para la imagen original
 
-    for index in range(0,30):
+    for index in range(0,31):
         cantImagenes = cantImagenes + separar
         imagenCorrida = generarImagen(img,cantImagenes)
         numero = str(index)
@@ -121,7 +121,7 @@ def main():
         print "generando imagen "+numero
 
 
-    var =58
+    var =59
     #para la imagen reflejada
     cantImagenes = int(largoTotal/30)
     separar = cantImagenes
@@ -134,7 +134,7 @@ def main():
         print "generando imagen "+numero
 
     nombreSalida="imagenes/animacion.gif"
-    delay=5
+    delay=10
     filepath="imagenes/*png"
     toGif(filepath,delay,nombreSalida)
 
