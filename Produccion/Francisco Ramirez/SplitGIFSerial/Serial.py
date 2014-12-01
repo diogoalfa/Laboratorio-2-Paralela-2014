@@ -9,6 +9,7 @@ import os
 from PIL import Image,ImageChops
 from os import system
 import StringIO
+import shutil
 
 def convertirImgMatrixRGB(img):
     return np.array(img.convert("RGB"))
@@ -59,10 +60,12 @@ if __name__ == '__main__':
 
         print(ancho,alto)
 
+
+    os.mkdir("Gif")
+
     base.save("negro.jpg")
     nuevo=Image.fromarray(nuevo)
     nuevo.save("nuevo.jpg")
-    nuevo.save("Gif/00.jpg")
     nuevo.save("Gif/01.jpg")
     nuevo.save("Gif/02.jpg")
     nuevo.save("Gif/03.jpg")
@@ -71,30 +74,25 @@ if __name__ == '__main__':
 
 
     imgTrans = rotar90(nuevo)
-    imgTrans.save("Gif/04.jpg")
     imgTrans.save("Gif/05.jpg")
     imgTrans.save("Gif/06.jpg")
     imgTrans.save("Gif/07.jpg")
     imgTrans = rotar180(nuevo)
-    imgTrans.save("Gif/08.jpg")
     imgTrans.save("Gif/09.jpg")
     imgTrans.save("Gif/10.jpg")
     imgTrans.save("Gif/11.jpg")
     imgTrans = rotar270(nuevo)
-    imgTrans.save("Gif/12.jpg")
     imgTrans.save("Gif/13.jpg")
     imgTrans.save("Gif/14.jpg")
     imgTrans.save("Gif/15.jpg")
 
     nombreSalida = "gifMaster.gif"
-    delay = 4
-    fileAgrandar = "Gif/*jpg"
-    system('convert -delay %d -loop 0 %s %s ' % (delay,fileAgrandar,nombreSalida))
+    delay = 1
+    file = "Gif/*jpg"
+    system('convert -delay %d -loop 0 %s %s ' % (delay,file,nombreSalida))
 
-
-
-
-    print ruta1
+    os.remove("nuevo.jpg")
+    shutil.rmtree("Gif")
 
     elapsed_time=time.time()-starting_point
     print ""
